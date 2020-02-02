@@ -66,7 +66,7 @@ for(var i = 0; i < examples.length; i++){
 	code = deindent(code,indent);
 
 	// Append the 'How to do it' content
-	S(examples[i]).append((showtitle ? '<h3>How to do it</h3>':'')+(css ? (showtitle ? '<h4>CSS</h4>':'')+'<pre class="prettyprint lang-css">'+deindent(sanitise(css))+'</pre>':'')+(js ? (showtitle ? '<h4>Javascript</h4>':'')+'<pre class="prettyprint lang-js">'+deindent(sanitise(js))+'</pre>':'')+(code && showtitle ? '<h4>HTML</h4>':'')+(code ? '<pre class="prettyprint lang-html">'+deindent(code)+'</pre>':''));
+	S(examples[i]).append((showtitle ? '<h3>How to do it</h3>':'')+(css ? (showtitle ? '<h4>CSS</h4>':'')+'<pre class="prettyprint lang-css">'+deindent(sanitise(css))+'</pre>':'')+(js ? (showtitle ? '<h4>Javascript</h4>':'')+'<pre class="prettyprint lang-js">'+deindent(sanitise(js)).replace(/\.ajax\([\'\"]([^\'\"]*)[\'\"]/g,function(m,p1){ return '\.ajaxtemp(\'<a href="'+p1+'">'+p1+'</a>\')'})+'</pre>':'')+(code && showtitle ? '<h4>HTML</h4>':'')+(code ? '<pre class="prettyprint lang-html">'+deindent(code)+'</pre>':''));
 
 	highlight(i);
 }
