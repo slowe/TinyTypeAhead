@@ -83,9 +83,9 @@
 					'dataType':'text',
 					'success': function(d,attr){
 						var s = 0;
-						console.log(attr);
 						attr.header.replace(/.*Content-Length: ([0-9]+).*/i,function(m,p1){ s = parseInt(p1); return m; });
-						S(this).html(attr.url.replace(/resources\//,"")+' ('+(s/1000).toFixed(1)+' kB)');
+						l = d.length;
+						S(this).html(attr.url.replace(/resources\//,"")+' '+(l/1000).toFixed(1)+'kB'+(l!=s ? ' ('+(s/1000).toFixed(1)+'kB)':''));
 					},
 					'error': function(e,attr){
 						console.error('Unable to load '+attr.url);
