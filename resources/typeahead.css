@@ -1,0 +1,4 @@
+.typeahead-results { width: 100%; }
+.typeahead-results ol { list-style: none; margin: 0px; padding: 0px;  }
+.typeahead-results li > a { padding: 0.25em 0.5em; background: #efefef; text-decoration: none; display: block; color: inherit; }
+.typeahead-results li.selected > a { background-color: #444; color: white; }
