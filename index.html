@@ -84,7 +84,7 @@
 					'success': function(d,attr){
 						var s = 0;
 						console.log(attr);
-						attr.header.replace(/.*Content-Length: ([0-9]+).*/,function(m,p1){ s = parseInt(p1); return m; });
+						attr.header.replace(/.*Content-Length: ([0-9]+).*/i,function(m,p1){ s = parseInt(p1); return m; });
 						S(this).html(attr.url.replace(/resources\//,"")+' ('+(s/1000).toFixed(1)+' kB)');
 					},
 					'error': function(e,attr){
