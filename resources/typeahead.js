@@ -43,11 +43,13 @@
 
 			// Add results to DOM
 			if(!results){
+				el.parentElement.style.position = "relative";
 				results = document.createElement('div');
 				results.classList.add('typeahead-results');
-				results.style.top = (el.clientTop + el.offsetHeight)+'px';
-				results.style.left = el.clientLeft+'px';
+				results.style.top = (el.offsetTop + el.offsetHeight)+'px';
+				results.style.left = el.offsetLeft+'px';
 				results.style.minWidth = el.offsetWidth+'px';
+				results.style.maxWidth = (el.parentElement.offsetWidth - el.offsetLeft)+'px';
 				results.style.position = "absolute";
 				form.style.position = "relative";
 				el.insertAdjacentElement('afterend',results);
@@ -91,14 +93,14 @@
 			return this;
 		}
 
-		function getLi(){ return results.querySelectorAll('li'); }
+		function getLi(){ return (results ? results.querySelectorAll('li') : []); }
 		
 		function select(i){
 			if(i){
 				if(typeof opt.process==="function") opt.process.call(_obj,opt.items[i]);
 				else console.log(opt.items[i])
 			}
-			results.innerHTML = "";
+			if(results) results.innerHTML = "";
 			el.value = "";
 			if(inline) el.style.marginBottom = "0px";
 			return;

@@ -44,6 +44,7 @@
 	h2 { margin-top: 3em; padding-top: 3em; border-top: 1px solid #999; }
 	input { line-height: 1.5em; font-size: 1em; }
 	input[type="submit"] { height: 2em; padding: 0px; }
+	label { font-weight: bold; }
 	.hljs { background: #111111; padding: 1em; display:block; overflow-x:auto; margin: 1em auto; background:#111; tab-size: 4; -moz-tab-size: 4; }
 	.hljs a { color: inherit; }
 	.hljs, .hljs-subst { color:#fff; }
@@ -125,6 +126,7 @@
 			</script>
 
 			<form id="form">
+				<label for="typeahead">Search for a UK airport:</label>
 				<input type="text" id="typeahead" value="" placeholder="e.g. Leeds and Bradford" /><input type="submit" value="Search" />
 				<div class="results">
 					The result is: <span id="results"></span>
@@ -149,6 +151,7 @@
 						{'name':'Doncaster Sheffield Airport','IATA':'DSA'},
 						{'name':'Humberside Airport','IATA':'HUY'}
 					],
+					'inline': true,	// The results are shown inline so as not to hide any existing DOM
 					'rank': function(d,str){
 						// Calculate a weighting
 						var r = 0;
@@ -176,6 +179,7 @@
 			});
 			</script>
 			<form id="form2">
+				<label for="typeahead2">Search for a UK airport:</label>
 				<input type="text" id="typeahead2" value="" placeholder="e.g. Leeds" /><input type="submit" value="Search" />
 				<div class="results">
 					The result is: <span id="results2"></span>
@@ -259,6 +263,7 @@
 			</script>
 
 			<form id="form3">
+				<label for="typeahead3">Search for a UK airport:</label><br />
 				<input type="text" id="typeahead3" value="" placeholder="e.g. Leeds" /><input type="submit" value="Search" />
 				<div class="results">
 					The result is: <span id="results3"></span>
