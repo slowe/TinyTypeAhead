@@ -28,16 +28,18 @@
 
 			// Rank the airports
 			tmp = [];
-			for(var i = 0 ; i < opt.items.length; i++){
-				datum = {'rank':0,'key':i,'value':opt.items[i]};
-				if(typeof opt.rank==="function") datum.rank = opt.rank(opt.items[i],s);
-				else{
-					if(opt.items[i].toUpperCase().indexOf(str) == 0) datum.rank += 3;
-					if(opt.items[i].toUpperCase().indexOf(str) > 0) datum.rank += 1;
+			if(str){
+				for(var i = 0 ; i < opt.items.length; i++){
+					datum = {'rank':0,'key':i,'value':opt.items[i]};
+					if(typeof opt.rank==="function") datum.rank = opt.rank(opt.items[i],s);
+					else{
+						if(opt.items[i].toUpperCase().indexOf(str) == 0) datum.rank += 3;
+						if(opt.items[i].toUpperCase().indexOf(str) > 0) datum.rank += 1;
+					}
+					tmp.push(datum);
 				}
-				tmp.push(datum);
+				tmp = sortBy(tmp,'rank');
 			}
-			tmp = sortBy(tmp,'rank');
 
 			// Add results to DOM
 			if(!results){
