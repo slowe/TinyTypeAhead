@@ -12,15 +12,26 @@
 		color: black;
 		margin: 0px;
 		padding: 0px;
+		background-color: white;
+		line-height: 1.5em;
 	}
-	.content {
-		max-width:940px;
+	header, .content {
+		max-width: 940px;
+		display: block;
 		margin:auto;
 		position: relative;
-		padding: 2em;
-		background-color: white;
-		margin-top: 2em;
+		color: #444;
+		padding: 1em;
 	}
+	header {
+		padding-top: 3em;
+	}
+	#downloads { background: #efefef; padding: 1em; position: relative; right: 0px; }
+	#downloads li { margin-left: 1em; }
+	#downloads a { padding-right: 0.5em; }
+
+	a, a:visited { color: #0090FF; }
+	
 	#forkme_banner {
 		background: url("https://slowe.github.io/graph/images/blacktocat.png") no-repeat scroll 95% 50% #0090FF;
 		border-bottom-left-radius: 2px;
@@ -31,20 +42,28 @@
 		font-weight: 700;
 		padding: 10px 50px 10px 10px;
 		position: absolute;
-		right: 0px;
-		top: -2em;
+		right: 1em;
+		top: 0em;
 		z-index: 10;
 		text-decoration: none;
 	}
+	.version { font-size: 0.6em; position: relative; padding-left: 0.5em; }
+	.version:before { content: "v"; }
+	code { background-color: #dfdfdf; padding: 0.25em; }
 	li.example { margin-bottom: 4em; }
 	h1 { margin-top: 0px; }
-	#downloads { text-align: right; float:right; line-height:2em; }
-	#downloads a { margin-left: 0.5em; padding-left: 0.5em; border-left: 1px solid black; }
-	#downloads a:first-child { border-left: 0px; }
-	h2 { margin-top: 3em; padding-top: 3em; border-top: 1px solid #999; }
-	input { line-height: 1.5em; font-size: 1em; }
-	input[type="submit"] { height: 2em; padding: 0px; }
+	h2 { margin-top: 2em; padding-top: 1em; }
+	.content h2 { margin-top: 0px; border-top: 0px; }
+	input { font-size: inherit; padding: 0; box-sizing: border-box; }
+	input[type="text"] { display: inline-block; height: 2em; border: 1px solid #999; border-radius: 0px; padding-left: 0.5em; }
+	input[type="submit"] { height: 2em; padding: 0px 0.5em; border: 0px; background: #444; color: white; cursor: pointer; }
+	input[type="submit"]:hover, input[type="submit"]:focus { background: #65B042; color: black; }
 	label { font-weight: bold; }
+	#form { background: #efefef; padding: 2em; }
+	#form ol li > a { background: #dfdfdf; }
+	#form ol li.selected > a { background: #0090FF; }
+	#form ol li > a:hover { background: #444; color: white; }
+	.prettyprint { line-height: 1.25em; }
 	.hljs { background: #111111; padding: 1em; display:block; overflow-x:auto; margin: 1em auto; background:#111; tab-size: 4; -moz-tab-size: 4; }
 	.hljs a { color: inherit; }
 	.hljs, .hljs-subst { color:#fff; }
@@ -55,7 +74,7 @@
 	.hljs-number, .hljs-built_in { color: #3387CC; }
 	.hljs-regexp, .hljs-literal, .hljs-bullet, .hljs-link { color:#31a354; }
 	.hljs-deletion, .hljs-variable { color:#88f; }
-	.hljs-selector-tag, .hljs-title, .hljs-section, .hljs-doctag, .hljs-type, .hljs-selector-id, .hljs-selector-class, .hljs-strong { color:#2254F4; }
+	.hljs-selector-tag, .hljs-title, .hljs-section, .hljs-doctag, .hljs-type, .hljs-selector-id, .hljs-selector-class, .hljs-strong { color:#3387CC; }
 	.hljs-keyword { color: #E28964; }
 	.hljs-emphasis { font-style:italic; }
 	.hljs-attribute { color:#D73058; }
@@ -65,16 +84,38 @@
 </head>
 <body>
 
+
+	<header>
+		<a href="https://github.com/slowe/TinyTypeAhead" id="forkme_banner">Fork Me on GitHub</a>
+		<h1>Tiny Type-ahead<span class="version"></span></h1>
+		<p>A tiny, lightweight, dependency-free, type-ahead search to attach to input fields.</p>
+
+		<form id="form">
+			<label for="typeahead">Search for a UK airport:</label><br />
+			<input type="text" id="typeahead" value="" placeholder="e.g. Leeds and Bradford" /><input type="submit" value="Search" />
+			<div class="results">
+				The result is: <span id="results"></span>
+			</div>
+		</form>
+
+
+	</header>
+
 	<div class="content">
 
-		<a href="https://github.com/slowe/stuquery" id="forkme_banner">Fork Me on GitHub</a>
 
-		<section id="downloads">
-			<a href="resources/typeahead.js" class="file">typeahead.js (kB)</a>
-			<a href="resources/typeahead.min.js" class="file">typeahead.min.js (kB)</a>
-			<a href="resources/typeahead.css" class="file">typeahead.css (kB)</a>
-		</section>
+		<h2>Downloads</h2>
+		<ul id="downloads">
+			<li><a href="resources/typeahead.js" class="file">typeahead.js (kB)</a></li>
+			<li><a href="resources/typeahead.min.js" class="file">typeahead.min.js (kB)</a></li>
+			<li><a href="resources/typeahead.css" class="file">typeahead.css (kB)</a></li>
+		</ul>
+
 		<script>
+		function ready(f){
+			if(/in/.test(document.readyState)) setTimeout('S(document).ready('+f+')',9);
+			else f();
+		};
 		var files = S('.file');
 		for(var f = 0; f < files.length; f++){
 			if(files[f].tagName == "A"){
@@ -94,18 +135,121 @@
 				});
 			}
 		}
+		ready(function(){
+			document.querySelector('.version').innerHTML = TypeAhead.version;
+		});
 		</script>
 
-		<h1>Tiny Typeahead</h1>
-		<p>A tiny, lightweight, dependency-free, typeahead search to attach to input fields.</p>
+		<script>
+		ready(function(){
+
+			// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
+			var chart = TypeAhead.init('#typeahead',{
+				'items': [],
+				'max': 5,	// Set a maximum number to list
+				'inline': true,
+				'render': function(d){
+					// Construct the label shown in the drop down list
+					return d['Airport name']+(d['IATA'] ? ' ('+d['IATA']+')':'');
+				},
+				'process': function(d){
+					// An airport has been selected so do something with the results
+					document.querySelector('#results').innerHTML = '<strong>'+d['Airport name']+(d['IATA'] ? ' / '+d['IATA']:'')+(d['Rwy (ft)'] ? ' / '+parseInt(d['Rwy (ft)']).toLocaleString()+' ft':'')+'</strong>';
+				},
+				'rank': function(d,str){
+					// Calculate the weight to add to this airport
+					var r = 0;
+					if(d['Airport name']){
+						// The airport name starts with the string
+						if(d['Airport name'].toUpperCase().indexOf(str.toUpperCase())==0) r += 3;
+
+						// The airport name contains the string
+						if(d['Airport name'].toUpperCase().indexOf(str.toUpperCase())>0) r += 1;
+					}
+					
+					// The location starts with the string
+					if(d['Location'] && d['Location'].toUpperCase().indexOf(str.toUpperCase())==0) r += 3;
+					
+					// If it has an IATA code we increase the weighting as it is a larger airport
+					if(d['IATA']){
+						r += 1;
+						if(d['IATA'].toUpperCase().indexOf(str.toUpperCase())==0) r += 2;
+						if(d['IATA'].toUpperCase() == str.toUpperCase()) r += 2;
+					}
+
+					// If it is a public airport we'll increase its weight
+					if(d['Usage']=="Public") r += 2;	
+					return r;
+				}
+			});
+			
+			var loading = false;
+			// Attach a callback to the 'change' event. This gets called each time the user enters/deletes a character.
+			chart.on('change',{'me':chart},function(e){
+				if(!loading){
+					loading = true;
+					// We'll use stuQuery's ajax to load the CSV, process it and add it to the item list
+					S().ajax('airports-uk.csv',{
+						'dataType':'text',
+						'this': e.data.me,	// chart3
+						'success': function(d){
+							d = d.split(/[\n]/);
+							data = new Array(d.length-1);
+							for(var l = 0; l < d.length; l++){
+								cols = d[l].split(/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/);
+								if(l == 0) header = cols;
+								else{
+									datum = {};
+									for(var c = 0; c < cols.length; c++) datum[header[c]] = cols[c].replace(/(^\"|\"$)/g,"");
+									data[l-1] = datum;
+								}
+							}
+							this.addItems(data);
+						}
+					});
+				}
+			});
+
+		});
+		</script>
 		
-		<h2>A simple example</h2>
-		<p>We have an array of airport names that we want to search through and provide a typeahead set of results.</p>
+		<h2>CSS</h2>
+		<p>The type-ahead results are added in a <code>&lt;div&gt;</code> element with the class <code>typeahead-results</code>. The div contains an <code>&lt;ol&gt;</code> containing list items <code>&lt;li&gt;</code> for each result. The selected list item has the class <code>selected</code>.</p>
+		<div class="example-code" data-title="false">
+			<style>
+			.typeahead-results {
+				width: 100%;
+			}
+			.typeahead-results ol {
+				list-style: none;
+				margin: 0px;
+				padding: 0px;
+			}
+			.typeahead-results li > a {
+				padding: 0.25em 0.5em;
+				background: #efefef;
+				text-decoration: none;
+				display: block;
+				color: inherit;
+			}
+			.typeahead-results li.selected > a {
+				background-color: #444;
+				color: white;
+			}
+			</style>
+		</div>
+		
+		<h2>Examples</h2>
+
+		<h3>A simple example</h3>
+		<p>In this example we have a small array of six airport names that we want to search through.</p>
 		<div class="example-code">
 
 			<link rel="stylesheet" href="resources/typeahead.css" />
 			<script type="text/javascript" src="resources/typeahead.js"></script>
 			<script>
+			// Here's a function to delay execution until the document is ready.
+			// You could, alternatively, use jQuery's document.ready() or something similar
 			function ready(f){
 				if(/in/.test(document.readyState)) setTimeout('S(document).ready('+f+')',9);
 				else f();
@@ -114,27 +258,33 @@
 			ready(function(){
 
 				// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
-				chart = TypeAhead.init('#typeahead',{
-					'items': ['Leeds and Bradford Airport','Newcastle International Airport','London City Airport','Durham Tees Valley Airport','Doncaster Sheffield Airport','Humberside Airport'],
-					'max': 5,
+				chart = TypeAhead.init('#typeahead1',{
+					'items': [
+						'Leeds and Bradford Airport',
+						'Newcastle International Airport',
+						'London City Airport',
+						'Durham Tees Valley Airport',
+						'Doncaster Sheffield Airport',
+						'Humberside Airport'
+					],
 					'process': function(d){
-						document.querySelector('#results').innerHTML = '<strong>'+d+'</strong>';
+						document.querySelector('#results1').innerHTML = '<strong>'+d+'</strong>';
 					}
 				});
 	
 			});
 			</script>
 
-			<form id="form">
-				<label for="typeahead">Search for a UK airport:</label>
-				<input type="text" id="typeahead" value="" placeholder="e.g. Leeds and Bradford" /><input type="submit" value="Search" />
+			<form id="form1">
+				<label for="typeahead">Search for an airport:</label>
+				<input type="text" id="typeahead1" value="" placeholder="e.g. Leeds and Bradford" /><input type="submit" value="Search" />
 				<div class="results">
-					The result is: <span id="results"></span>
+					The result is: <span id="results1"></span>
 				</div>
 			</form>
 		</div>
 
-		<h2>Data objects</h2>
+		<h3>Data objects</h3>
 		<p>In this example we have a <code>name</code> and <code>IATA</code> code for each airport. We will rank the results with different weights depending on how we match.</p>
 		<div class="example-code">
 
@@ -179,7 +329,7 @@
 			});
 			</script>
 			<form id="form2">
-				<label for="typeahead2">Search for a UK airport:</label>
+				<label for="typeahead2">Search for an airport:</label>
 				<input type="text" id="typeahead2" value="" placeholder="e.g. Leeds" /><input type="submit" value="Search" />
 				<div class="results">
 					The result is: <span id="results2"></span>
@@ -187,7 +337,7 @@
 			</form>
 		</div>
 
-		<h2>Load results from a separate file</h2>
+		<h3>Load results from a separate file</h3>
 		<p>Sometimes you may want to reduce initial page load or just have the searchable values in a separate file. This example loads results on the first key press. If the file is large, this can lead to a delay before the type-ahead results show up.</p>
 		<div class="example-code">
 			<script>

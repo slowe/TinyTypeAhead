@@ -1,7 +1,7 @@
 (function(root){
 
 	function Builder(){
-		this.version = "0.1.0";
+		this.version = "0.1.1";
 		this.init = function(el,opt){ return new TA(el,opt); };
 		return this;
 	}
@@ -49,7 +49,7 @@
 				results.style.top = (el.offsetTop + el.offsetHeight)+'px';
 				results.style.left = el.offsetLeft+'px';
 				results.style.minWidth = el.offsetWidth+'px';
-				results.style.maxWidth = (el.parentElement.offsetWidth - el.offsetLeft)+'px';
+				results.style.maxWidth = (el.parentElement.offsetWidth - el.offsetLeft - parseInt(window.getComputedStyle(el.parentElement, null).getPropertyValue('padding-right')))+'px';
 				results.style.position = "absolute";
 				form.style.position = "relative";
 				el.insertAdjacentElement('afterend',results);

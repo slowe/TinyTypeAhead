@@ -13,8 +13,8 @@ var examples = S('.example-code');
 function tidy(t){ return t.replace(/===NEWLINE===/g,"\n").replace(/\n*$/,"").replace(/^\n*/,""); }
 function sanitise(t){ return t.replace(/\</g,"&lt;").replace(/\>/g,"&gt;"); }
 function deindent(t){
-	indent = "";
-	t.replace(/^([\s\t]+)/,function(m,p1,p2){ indent = p1; return p1; });
+	var indent = "";
+	t.replace(/^([ \t]*)/,function(m,p1,p2){ indent = p1; return p1; });
 	if(indent) return t.replace(new RegExp('(^|\n)'+indent,'g'),function(m,p1){ return p1; });//.replace(/(^|\n)[\s\t]+$/,"");
 	else return t;
 }
@@ -56,14 +56,11 @@ for(var i = 0; i < examples.length; i++){
 
 	code = sanitise(tidy(temp));
 	code = code.replace(/(src|href)=\"([^\"]+)\"/g,function(m,p1,p2){ return p1+'="<a href="'+p2+'">'+p2+'</a>"'; });
-	
+
+	if(code.match(/[^\s\t]/g) == null) code = "";
+
 	showtitle = true;
 	if(S(examples[i]).attr('data-title')=="false") showtitle = false;
-
-	var indent = "";
-	code.replace(/^([\s\t]+)/,function(m,p1,p2){ indent = p1; return p1; });
-
-	code = deindent(code,indent);
 
 	// Append the 'How to do it' content
 	S(examples[i]).append((showtitle ? '<h3>How to do it</h3>':'')+(css ? (showtitle ? '<h4>CSS</h4>':'')+'<pre class="prettyprint lang-css">'+deindent(sanitise(css))+'</pre>':'')+(js ? (showtitle ? '<h4>Javascript</h4>':'')+'<pre class="prettyprint lang-js">'+deindent(sanitise(js)).replace(/\.ajax\([\'\"]([^\'\"]*)[\'\"]/g,function(m,p1){ return '\.ajaxtemp(\'<a href="'+p1+'">'+p1+'</a>\')'})+'</pre>':'')+(code && showtitle ? '<h4>HTML</h4>':'')+(code ? '<pre class="prettyprint lang-html">'+deindent(code)+'</pre>':''));
