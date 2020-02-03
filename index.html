@@ -152,7 +152,7 @@
 				},
 				'process': function(d){
 					// An airport has been selected so do something with the results
-					document.querySelector('#results').innerHTML = '<strong>'+d['Airport name']+(d['IATA'] ? ' ('+d['IATA']+')':'')+(d['Rwy (ft)'] ? '. The runway is '+Math.round(parseInt(d['Rwy (ft)'])*(1/0.3)).toLocaleString()+' metres long.':'')+'</strong> <sup>[ <a href="https://en.wikipedia.org/wiki/List_of_airports_in_the_United_Kingdom_and_the_British_Crown_Dependencies">cite</a> ]</sup>';
+					document.querySelector('#results').innerHTML = '<strong>'+d['Airport name']+(d['IATA'] ? ' ('+d['IATA']+')':'')+(d['Rwy (ft)'] ? '. The runway is '+Math.round(parseInt(d['Rwy (ft)'])*(0.3)).toLocaleString()+' metres long.':'')+'</strong> <sup>[ <a href="https://en.wikipedia.org/wiki/List_of_airports_in_the_United_Kingdom_and_the_British_Crown_Dependencies">cite</a> ]</sup>';
 				},
 				'rank': function(d,str){
 					// Calculate the weight to add to this airport
