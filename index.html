@@ -132,7 +132,7 @@
 			</form>
 		</div>
 
-		<h2>Example with data objects</h2>
+		<h2>Data objects</h2>
 		<p>In this example we have a <code>name</code> and <code>IATA</code> code for each airport. We will rank the results with different weights depending on how we match.</p>
 		<div class="example-code">
 
@@ -141,21 +141,34 @@
 
 				// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
 				var chart2 = TypeAhead.init('#typeahead2',{
-					'items': [{'name':'Leeds and Bradford Airport','IATA':'LBA'},{'name':'Newcastle International Airport','IATA':'NCL'},{'name':'London City Airport','IATA':'LCY'},{'name':'Durham Tees Valley Airport','IATA':'MME'},{'name':'Doncaster Sheffield Airport','IATA':'DSA'},{'name':'Humberside Airport','IATA':'HUY'}],
+					'items': [
+						{'name':'Leeds and Bradford Airport','IATA':'LBA'},
+						{'name':'Newcastle International Airport','IATA':'NCL'},
+						{'name':'London City Airport','IATA':'LCY'},
+						{'name':'Durham Tees Valley Airport','IATA':'MME'},
+						{'name':'Doncaster Sheffield Airport','IATA':'DSA'},
+						{'name':'Humberside Airport','IATA':'HUY'}
+					],
 					'rank': function(d,str){
+						// Calculate a weighting
 						var r = 0;
+						// If the name starts with the string add 3
 						if(d.name.toUpperCase().indexOf(str.toUpperCase())==0) r += 3;
+						// If the name includes the string add 1
 						if(d.name.toUpperCase().indexOf(str.toUpperCase())>0) r += 1;
+						// If the IATA code starts with the string add 3
 						if(d.IATA.toUpperCase().indexOf(str.toUpperCase())==0) r += 3;
+						// If the IATA code matches
 						if(d.IATA.toUpperCase() == str.toUpperCase()) r += 3;
 						return r;
 					},
 					'process': function(d){
-						console.log('Results:',d);
-						document.querySelector('#results2').innerHTML = '<strong>'+d.name+'</strong>';
+						// An airport has been selected so show the result
+						document.querySelector('#results2').innerHTML = '<strong>'+d.name+' ('+d.IATA+')</strong>';
 					},
 					'render': function(d){
-						return d.name+' ('+d.IATA+')';
+						// Render the drop down list for each airport
+						return d.name;
 					}
 				});
 
@@ -170,43 +183,56 @@
 			</form>
 		</div>
 
-		<h2>Example that loads results from a separate file</h2>
-		<p>Sometimes you might want to reduce initial page load by getting the data for the typeahead from a separate file that is only loaded once you start typing.</p>
+		<h2>Load results from a separate file</h2>
+		<p>Sometimes you may want to reduce initial page load or just have the searchable values in a separate file. This example loads results on the first key press. If the file is large, this can lead to a delay before the type-ahead results show up.</p>
 		<div class="example-code">
-
 			<script>
 			ready(function(){
 
 				// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
 				var chart3 = TypeAhead.init('#typeahead3',{
 					'items': [],
-					'max': 8,
+					'max': 8,	// Set a maximum number to list
 					'render': function(d){
+						// Construct the label shown in the drop down list
 						return d['Airport name']+(d['IATA'] ? ' ('+d['IATA']+')':'');
 					},
 					'process': function(d){
-						console.log('Results:',d);
+						// An airport has been selected so do something with the results
 						document.querySelector('#results3').innerHTML = '<strong>'+d['Airport name']+(d['IATA'] ? ' / '+d['IATA']:'')+(d['Rwy (ft)'] ? ' / '+parseInt(d['Rwy (ft)']).toLocaleString()+' ft':'')+'</strong>';
 					},
 					'rank': function(d,str){
+						// Calculate the weight to add to this airport
 						var r = 0;
 						if(d['Airport name']){
+							// The airport name starts with the string
 							if(d['Airport name'].toUpperCase().indexOf(str.toUpperCase())==0) r += 3;
+
+							// The airport name contains the string
 							if(d['Airport name'].toUpperCase().indexOf(str.toUpperCase())>0) r += 1;
 						}
+						
+						// The location starts with the string
 						if(d['Location'] && d['Location'].toUpperCase().indexOf(str.toUpperCase())==0) r += 3;
+						
+						// If it has an IATA code we increase the weighting as it is a larger airport
+						if(d['IATA']) r += 2;
+
+						// If it is a public airport we'll increase its weight
+						if(d['Usage']=="Public") r += 2;	
 						return r;
 					}
 				});
 				
-
 				var loading = false;
+				// Attach a callback to the 'change' event. This gets called each time the user enters/deletes a character.
 				chart3.on('change',{'me':chart3},function(e){
 					if(!loading){
 						loading = true;
+						// We'll use stuQuery's ajax to load the CSV, process it and add it to the item list
 						S().ajax('airports-uk.csv',{
 							'dataType':'text',
-							'this': e.data.me,
+							'this': e.data.me,	// chart3
 							'success': function(d){
 								d = d.split(/[\n]/);
 								data = new Array(d.length-1);
@@ -215,13 +241,11 @@
 									if(l == 0) header = cols;
 									else{
 										datum = {};
-										for(var c = 0; c < cols.length; c++){
-											datum[header[c]] = cols[c].replace(/(^\"|\"$)/g,"");
-										}
+										for(var c = 0; c < cols.length; c++) datum[header[c]] = cols[c].replace(/(^\"|\"$)/g,"");
 										data[l-1] = datum;
 									}
 								}
-								this.addData(data);
+								this.addItems(data);
 							}
 						});
 					}

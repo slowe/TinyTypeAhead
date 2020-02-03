@@ -173,7 +173,7 @@
 		if(el){
 			el.setAttribute('autocomplete','off');
 		}
-		this.addData = function(d){
+		this.addItems = function(d){
 			if(!opt.items) opt.items = [];
 			opt.items = opt.items.concat(d);
 		}
