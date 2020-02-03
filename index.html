@@ -50,7 +50,9 @@
 	code { background-color: #dfdfdf; padding: 0.25em; }
 	li.example { margin-bottom: 4em; }
 	h1 { margin-top: 0px; }
-	h2 { margin-top: 2em; padding-top: 1em; }
+	h2 { margin-top: 2em; padding-top: 1em; font-size: 1.5em; }
+	h3 { font-size: 1.4em; }
+	h4 { font-size: 1.2em; }
 	.content h2 { margin-top: 0px; border-top: 0px; }
 	input { font-size: inherit; padding: 0; box-sizing: border-box; }
 	input[type="text"] { display: inline-block; height: 2em; border: 1px solid #999; border-radius: 0px; padding-left: 0.5em; max-width: calc(100% - 4.2em); }
@@ -60,7 +62,7 @@
 	#form { background: #efefef; padding: 1em; }
 	#form ol li > a { background: #dfdfdf; }
 	#form ol li.selected > a { background: #0090FF; }
-	#form ol li > a:hover { background: #444; color: white; }
+	#form ol li > a:hover, #form ol li > a:focus { background: #444; color: white; }
 	.prettyprint { line-height: 1.25em; }
 	.hljs { background: #111111; padding: 1em; display:block; overflow-x:auto; margin: 1em auto; background:#111; tab-size: 4; -moz-tab-size: 4; }
 	.hljs a { color: inherit; }
@@ -339,7 +341,79 @@
 		</div>
 
 		<h3>Load results from a separate file</h3>
+		<p>Sometimes you may want to reduce initial page load or just have the searchable values in a separate file. This example loads results from a JSON file on the first key press. If the file is large, this can lead to a delay before the type-ahead results show up. It uses a custom function to define how the input text matches with each item; it matches on <code>name</code>, <code>IATA</code>, <code>county</code> and <code>loc</code> giving a higher weight if a field starts with the string than if it contains the string.</p>
+		<div class="example-code">
+			<link rel="stylesheet" href="resources/typeahead.css" />
+			<script type="text/javascript" src="resources/typeahead.js"></script>
+			<script>
+			ready(function(){
+
+				// Define a function for scoring how well a string matches
+				function getScore(str1,str2,v1,v2,v3){
+					var r = 0;
+					str1 = str1.toUpperCase();
+					str2 = str2.toUpperCase();
+					if(str1.indexOf(str2)==0) r += (v1||3);
+					if(str1.indexOf(str2)>0) r += (v2||1);
+					if(str1==str2) r += (v3||4);
+					return r;
+				}
+
+				// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
+				var chart3 = TypeAhead.init('#typeahead3',{
+					'items': [],
+					'max': 8,	// Set a maximum number to list
+					'render': function(d){
+						// Construct the label shown in the drop down list
+						return d['name']+(d['IATA'] ? ' ('+d['IATA']+')':'');
+					},
+					'process': function(d){
+						// An airport has been selected so do something with the results
+						document.querySelector('#results3').innerHTML = '<strong>'+d['name']+(d['IATA'] ? ' / '+d['IATA']:'')+(d['runway'] ? ' / '+d['runway'].toLocaleString()+' ft':'')+'</strong>';
+					},
+					'rank': function(d,str){
+						// Calculate the weight to add to this airport
+						var r = 0;
+						if(d['name']) r += getScore(d['name'],str);
+						if(d['loc']) r += getScore(d['loc'],str);
+						if(d['IATA']) r += getScore(d['IATA'],str,2,1);
+						if(d['county']) r += getScore(d['county'],str);
+						if(d['usage']=="Public") r += 2;	// If it is a public airport we'll increase its weight
+						return r;
+					}
+				});
+				
+				var loading = false;
+				// Attach a callback to the 'change' event. This gets called each time the user enters/deletes a character.
+				chart3.on('change',{'me':chart3},function(e){
+					if(!loading){
+						loading = true;
+						// We'll use stuQuery's ajax to load the CSV, process it and add it to the item list
+						S().ajax('airports-uk.json',{
+							'dataType':'json',
+							'this': e.data.me,	// chart3
+							'success': function(data){
+								this.addItems(data);
+							}
+						});
+					}
+				});
+
+			});
+			</script>
+			<form id="form3">
+				<label for="typeahead3">Search for a UK airport:</label><br />
+				<input type="text" id="typeahead3" value="" placeholder="e.g. Leeds" /><input type="submit" value="Search" />
+				<div class="results">
+					The result is: <span id="results3"></span>
+				</div>
+			</form>
+		</div>
+
+
+		<h3>Load results from a separate CSV file</h3>
 		<p>Sometimes you may want to reduce initial page load or just have the searchable values in a separate file. This example loads results on the first key press. If the file is large, this can lead to a delay before the type-ahead results show up.</p>
+
 		<div class="example-code">
 			<link rel="stylesheet" href="resources/typeahead.css" />
 			<script type="text/javascript" src="resources/typeahead.js"></script>
@@ -347,7 +421,7 @@
 			ready(function(){
 
 				// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
-				var chart3 = TypeAhead.init('#typeahead3',{
+				var chart4 = TypeAhead.init('#typeahead4',{
 					'items': [],
 					'max': 8,	// Set a maximum number to list
 					'render': function(d){
@@ -387,13 +461,13 @@
 				
 				var loading = false;
 				// Attach a callback to the 'change' event. This gets called each time the user enters/deletes a character.
-				chart3.on('change',{'me':chart3},function(e){
+				chart4.on('change',{'me':chart4},function(e){
 					if(!loading){
 						loading = true;
 						// We'll use stuQuery's ajax to load the CSV, process it and add it to the item list
 						S().ajax('airports-uk.csv',{
 							'dataType':'text',
-							'this': e.data.me,	// chart3
+							'this': e.data.me,	// chart4
 							'success': function(d){
 								d = d.split(/[\n]/);
 								data = new Array(d.length-1);
@@ -415,14 +489,13 @@
 			});
 			</script>
 			<form id="form3">
-				<label for="typeahead3">Search for a UK airport:</label><br />
-				<input type="text" id="typeahead3" value="" placeholder="e.g. Leeds" /><input type="submit" value="Search" />
+				<label for="typeahead4">Search for a UK airport:</label><br />
+				<input type="text" id="typeahead4" value="" placeholder="e.g. Leeds" /><input type="submit" value="Search" />
 				<div class="results">
-					The result is: <span id="results3"></span>
+					The result is: <span id="results4"></span>
 				</div>
 			</form>
 		</div>
-
 	</div>
 	
 	<script language="javascript" type="text/javascript" src="resources/formatexamples.js"></script>

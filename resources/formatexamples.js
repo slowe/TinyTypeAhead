@@ -30,7 +30,7 @@ function highlight(el){
 		markup = S(els[i]).html()
 
 		// Make JSON files into links
-		markup = markup.replace(/([\"\'])([^\"\']*\.json)([\"\'])/g,function(m,p1,p2,p3){ return p1+'<a href="'+p2+'">'+p2+'</a>'+p3; });
+		markup = markup.replace(/([\"\'])([^\"\']*\.(json|csv))([\"\'])/g,function(m,p1,p2,p3,p4){ return p1+'<a href="'+p2+'">'+p2+'</a>'+p4; });
 
 		// Add back to the document
 		S(els[i]).html(markup);
@@ -63,7 +63,7 @@ for(var i = 0; i < examples.length; i++){
 	if(S(examples[i]).attr('data-title')=="false") showtitle = false;
 
 	// Append the 'How to do it' content
-	S(examples[i]).append((showtitle ? '<h3>How to do it</h3>':'')+(css ? (showtitle ? '<h4>CSS</h4>':'')+'<pre class="prettyprint lang-css">'+deindent(sanitise(css))+'</pre>':'')+(js ? (showtitle ? '<h4>Javascript</h4>':'')+'<pre class="prettyprint lang-js">'+deindent(sanitise(js)).replace(/\.ajax\([\'\"]([^\'\"]*)[\'\"]/g,function(m,p1){ return '\.ajaxtemp(\'<a href="'+p1+'">'+p1+'</a>\')'})+'</pre>':'')+(code && showtitle ? '<h4>HTML</h4>':'')+(code ? '<pre class="prettyprint lang-html">'+deindent(code)+'</pre>':''));
+	S(examples[i]).append((showtitle ? '<h4>How to do it</h4>':'')+(css ? (showtitle ? '<h4>CSS</h4>':'')+'<pre class="prettyprint lang-css">'+deindent(sanitise(css))+'</pre>':'')+(js ? (showtitle ? '<h4>Javascript</h4>':'')+'<pre class="prettyprint lang-js">'+deindent(sanitise(js))+'</pre>':'')+(code && showtitle ? '<h4>HTML</h4>':'')+(code ? '<pre class="prettyprint lang-html">'+deindent(code)+'</pre>':''));
 
 	highlight(i);
 }
