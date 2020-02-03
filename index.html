@@ -216,7 +216,11 @@
 						if(d['Location'] && d['Location'].toUpperCase().indexOf(str.toUpperCase())==0) r += 3;
 						
 						// If it has an IATA code we increase the weighting as it is a larger airport
-						if(d['IATA']) r += 2;
+						if(d['IATA']){
+							r += 1;
+							if(d['IATA'].toUpperCase().indexOf(str.toUpperCase())==0) r += 2;
+							if(d['IATA'].toUpperCase() == str.toUpperCase()) r += 2;
+						}
 
 						// If it is a public airport we'll increase its weight
 						if(d['Usage']=="Public") r += 2;	
