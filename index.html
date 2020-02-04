@@ -142,6 +142,16 @@
 
 		<script>
 		ready(function(){
+			// Define a function for scoring how well a string matches
+			function getScore(str1,str2,v1,v2,v3){
+				var r = 0;
+				str1 = str1.toUpperCase();
+				str2 = str2.toUpperCase();
+				if(str1.indexOf(str2)==0) r += (v1||3);
+				if(str1.indexOf(str2)>0) r += (v2||1);
+				if(str1==str2) r += (v3||4);
+				return r;
+			}
 
 			// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
 			var chart = TypeAhead.init('#typeahead',{
@@ -150,36 +160,22 @@
 				'inline': true,
 				'render': function(d){
 					// Construct the label shown in the drop down list
-					return d['Airport name']+(d['IATA'] ? ' ('+d['IATA']+')':'');
+					return d['name']+(d['IATA'] ? ' ('+d['IATA']+')':'');
 				},
 				'process': function(d){
 					// An airport has been selected so do something with the results
-					document.querySelector('#results').innerHTML = '<strong>'+d['Airport name']+(d['IATA'] ? ' ('+d['IATA']+')':'')+(d['Rwy (ft)'] ? '. The runway is '+Math.round(parseInt(d['Rwy (ft)'])*(0.3)).toLocaleString()+' metres long.':'')+'</strong> <sup>[ <a href="https://en.wikipedia.org/wiki/List_of_airports_in_the_United_Kingdom_and_the_British_Crown_Dependencies">cite</a> ]</sup>';
+					document.querySelector('#results').innerHTML = '<strong>'+d['name']+(d['IATA'] ? ' ('+d['IATA']+')':'')+(d['runway'] ? '. The runway is '+Math.round(d['runway']*(0.3)).toLocaleString()+' metres long.':'')+'</strong> <sup>[ <a href="https://en.wikipedia.org/wiki/List_of_airports_in_the_United_Kingdom_and_the_British_Crown_Dependencies">cite</a> ]</sup>';
 				},
 				'rank': function(d,str){
 					// Calculate the weight to add to this airport
 					var r = 0;
-					if(d['Airport name']){
-						// The airport name starts with the string
-						if(d['Airport name'].toUpperCase().indexOf(str.toUpperCase())==0) r += 3;
-
-						// The airport name contains the string
-						if(d['Airport name'].toUpperCase().indexOf(str.toUpperCase())>0) r += 1;
-					}
-					
-					// The location starts with the string
-					if(d['Location'] && d['Location'].toUpperCase().indexOf(str.toUpperCase())==0) r += 3;
-					
-					// If it has an IATA code we increase the weighting as it is a larger airport
-					if(d['IATA']){
-						r += 1;
-						if(d['IATA'].toUpperCase().indexOf(str.toUpperCase())==0) r += 2;
-						if(d['IATA'].toUpperCase() == str.toUpperCase()) r += 2;
-					}
-
-					// If it is a public airport we'll increase its weight
-					if(d['Usage']=="Public") r += 2;	
+					if(d['name']) r += getScore(d['name'],str);
+					if(d['loc']) r += getScore(d['loc'],str);
+					if(d['IATA']) r += getScore(d['IATA'],str,2,1);
+					if(d['county']) r += getScore(d['county'],str);
+					if(d['usage']=="Public") r += 2;	// If it is a public airport we'll increase its weight
 					return r;
+
 				}
 			});
 			
@@ -189,21 +185,10 @@
 				if(!loading){
 					loading = true;
 					// We'll use stuQuery's ajax to load the CSV, process it and add it to the item list
-					S().ajax('airports-uk.csv',{
-						'dataType':'text',
-						'this': e.data.me,	// chart3
-						'success': function(d){
-							d = d.split(/[\n]/);
-							data = new Array(d.length-1);
-							for(var l = 0; l < d.length; l++){
-								cols = d[l].split(/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/);
-								if(l == 0) header = cols;
-								else{
-									datum = {};
-									for(var c = 0; c < cols.length; c++) datum[header[c]] = cols[c].replace(/(^\"|\"$)/g,"");
-									data[l-1] = datum;
-								}
-							}
+					S().ajax('airports-uk.json',{
+						'dataType':'json',
+						'this': e.data.me,	// chart
+						'success': function(data){
 							this.addItems(data);
 						}
 					});
