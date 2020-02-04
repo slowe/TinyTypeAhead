@@ -57,7 +57,7 @@
 	input { font-size: inherit; padding: 0; box-sizing: border-box; }
 	input[type="text"] { display: inline-block; height: 2em; border: 1px solid #999; border-radius: 0px; padding-left: 0.5em; max-width: calc(100% - 4.2em); }
 	input[type="submit"] { height: 2em; padding: 0px 0.5em; border: 0px; background: #444; color: white; cursor: pointer; }
-	input[type="submit"]:hover, input[type="submit"]:focus { background: #65B042; color: black; }
+	input[type="submit"]:hover, input[type="submit"]:focus { background: #0090FF; color: white; }
 	label { font-weight: bold; }
 	#form { background: #f8f8f8; padding: 1em; }
 	#form ol li > a { background: #efefef; }
@@ -415,7 +415,7 @@
 					},
 					'process': function(d){
 						// An airport has been selected so do something with the results
-						document.querySelector('#results3').innerHTML = '<strong>'+d['Airport name']+(d['IATA'] ? ' / '+d['IATA']:'')+(d['Rwy (ft)'] ? ' / '+parseInt(d['Rwy (ft)']).toLocaleString()+' ft':'')+'</strong>';
+						document.querySelector('#results4').innerHTML = '<strong>'+d['Airport name']+(d['IATA'] ? ' / '+d['IATA']:'')+(d['Rwy (ft)'] ? ' / '+parseInt(d['Rwy (ft)']).toLocaleString()+' ft':'')+'</strong>';
 					},
 					'rank': function(d,str){
 						// Calculate the weight to add to this airport
