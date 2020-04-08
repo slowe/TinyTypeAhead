@@ -1,7 +1,8 @@
+/*!
+	Typeahead search v0.1.3
+*/
 (function(root){
 
-	/* ======================= */
-	/* Typeahead search v0.1.3 */
 	function Builder(){
 		this.version = "0.1.3";
 		this.init = function(el,opt){ return new TA(el,opt); };
