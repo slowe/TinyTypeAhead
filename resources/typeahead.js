@@ -1,7 +1,9 @@
 (function(root){
 
+	/* ======================= */
+	/* Typeahead search v0.1.3 */
 	function Builder(){
-		this.version = "0.1.2";
+		this.version = "0.1.3";
 		this.init = function(el,opt){ return new TA(el,opt); };
 		return this;
 	}
@@ -24,12 +26,13 @@
 
 		function search(s,e,t){
 
+			var n,i,tmp,str,html,datum,ev;
 			str = s.toUpperCase();
 
-			// Rank the airports
+			// Rank the results
 			tmp = [];
 			if(str){
-				for(var i = 0 ; i < opt.items.length; i++){
+				for(i = 0 ; i < opt.items.length; i++){
 					datum = {'rank':0,'key':i,'value':opt.items[i]};
 					if(typeof opt.rank==="function") datum.rank = opt.rank(opt.items[i],s);
 					else{
@@ -56,9 +59,9 @@
 
 			html = "";
 			if(tmp.length > 0){
-				var n = Math.min(tmp.length,(typeof opt.max==="number" ? opt.max : 10));
+				n = Math.min(tmp.length,(typeof opt.max==="number" ? opt.max : 10));
 				html = "<ol>";
-				for(var i = 0; i < n; i++){
+				for(i = 0; i < n; i++){
 					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" '+(i==0 ? ' class="selected"':'')+'><a tabindex="0" href="#" class="name">'+(typeof opt.render==="function" ? opt.render(opt.items[tmp[i].key]) : opt.items[tmp[i].key])+"</a></li>";
 				}
 				html += "</ol>";
@@ -70,18 +73,18 @@
 
 			// Add click events
 			var li = getLi();
-			for(var i = 0 ; i < li.length ; i++){
+			for(i = 0 ; i < li.length ; i++){
 				li[i].addEventListener('click',function(ev){
 					ev.preventDefault();
 					ev.stopPropagation();
-					select(this.getAttribute('data-id'));
+					selectLI(this.getAttribute('data-id'));
 				});
 			}
 			
 			if(evs[t]){
 				e._typeahead = _obj;
 				// Process each of the events attached to this event
-				for(var i = 0; i < evs[t].length; i++){
+				for(i = 0; i < evs[t].length; i++){
 					ev = evs[t][i];
 					e.data = ev.data||{};
 					if(typeof ev.fn==="function") ev.fn.call(this,e);
@@ -93,10 +96,11 @@
 
 		function getLi(){ return (results ? results.querySelectorAll('li') : []); }
 		
-		function select(i){
+		function selectLI(i){
 			if(i){
+				_obj.input = el;
 				if(typeof opt.process==="function") opt.process.call(_obj,opt.items[i]);
-				else console.log(opt.items[i])
+				else console.log(opt.items[i]);
 			}
 			if(results) results.innerHTML = "";
 			if(inline) el.style.marginBottom = "0px";
@@ -105,9 +109,8 @@
 
 		function submit(){
 			var li = getLi();
-			var s = -1;
 			for(var i = 0; i < li.length; i++){
-				if(li[i].classList.contains('selected')) return select(li[i].getAttribute('data-id'));
+				if(li[i].classList.contains('selected')) return selectLI(li[i].getAttribute('data-id'));
 			}
 			return;
 		}
@@ -144,8 +147,6 @@
 						}else if(e.keyCode==13){
 							submit();
 						}else{
-							t = event;
-
 							// Match here
 							search(this.value,e,event);
 						}
@@ -154,7 +155,7 @@
 				evs[event].push({'fn':fn,'data':data});
 			}else console.warn('No event of type '+event);
 			return this;
-		}
+		};
 		this.off = function(e,fn){
 			// Remove any existing event from our list
 			if(evs[e]){
@@ -162,7 +163,7 @@
 					if(evs[e][i].fn==fn) evs[e].splice(i,1);
 				}
 			}
-		}
+		};
 		if(el.form){
 			form = el.form;
 			form.addEventListener('submit',function(e){
@@ -177,7 +178,7 @@
 		this.addItems = function(d){
 			if(!opt.items) opt.items = [];
 			opt.items = opt.items.concat(d);
-		}
+		};
 		this.on('change',{'test':'blah'},function(e){ console.log('change end'); });
 
 		return this;
@@ -187,10 +188,10 @@
 
 	// Sort the data
 	function sortBy(arr,i){
-		yaxis = i;
 		return arr.sort(function (a, b) {
 			return a[i] < b[i] ? 1 : -1;
 		});
 	}
+	/* End Typeahead */
 
 })(window || this);
