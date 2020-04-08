@@ -150,6 +150,7 @@
 						}else{
 							// Match here
 							search(this.value,e,event);
+							if(typeof opt.endsearch==="function") opt.endsearch(this.value);
 						}
 					});
 				}
