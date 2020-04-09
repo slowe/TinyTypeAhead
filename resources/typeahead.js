@@ -1,10 +1,10 @@
 /*!
-	Typeahead search v0.1.3
+	Typeahead search v0.1.4
 */
 (function(root){
 
 	function Builder(){
-		this.version = "0.1.3";
+		this.version = "0.1.4";
 		this.init = function(el,opt){ return new TA(el,opt); };
 		return this;
 	}
@@ -153,8 +153,13 @@
 							if(typeof opt.endsearch==="function") opt.endsearch(this.value);
 						}
 					});
+					el.addEventListener('blur',function(e){
+						if(typeof opt.blur==="function") opt.blur();
+					});
 				}
 				evs[event].push({'fn':fn,'data':data});
+			}else if(event=="blur"){
+				console.log('blur');
 			}else console.warn('No event of type '+event);
 			return this;
 		};
