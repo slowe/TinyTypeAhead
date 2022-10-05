@@ -1,11 +1,10 @@
-
 /*!
 	Typeahead search v0.1.8
 */
 (function(root){
 
 	function Builder(){
-		this.version = "0.1.7";
+		this.version = "0.1.8";
 		this.init = function(el,opt){ return new TA(el,opt); };
 		return this;
 	}
@@ -56,7 +55,7 @@
 				results.style.left = el.offsetLeft+'px';
 				results.style.maxWidth = (el.parentElement.offsetWidth - el.offsetLeft - parseInt(window.getComputedStyle(el.parentElement, null).getPropertyValue('padding-right')))+'px';
 				results.style.position = "absolute";
-				if(frm) frm.style.position = "relative";
+				frm.style.position = "relative";
 				el.insertAdjacentElement('afterend',results);
 			}
 
@@ -65,7 +64,7 @@
 				n = (typeof opt.max==="number") ? Math.min(tmp.length,opt.max) : tmp.length;
 				html = "<ol>";
 				for(i = 0; i < n; i++){
-					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" '+(i==0 ? ' class="selected"':'')+'><button tabindex="0" href="#" class="name item"><span>'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</span></button></li>";
+					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" '+(i==0 ? ' class="selected"':'')+'><a tabindex="0" href="#" class="name item">'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</a></li>";
 				}
 				html += "</ol>";
 			}
