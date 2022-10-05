@@ -1,10 +1,10 @@
 /*!
-	Typeahead search v0.1.6
+	Typeahead search v0.1.7
 */
 (function(root){
 
 	function Builder(){
-		this.version = "0.1.6";
+		this.version = "0.1.7";
 		this.init = function(el,opt){ return new TA(el,opt); };
 		return this;
 	}
@@ -22,7 +22,7 @@
 		}
 		var _obj = this;
 		var evs = {};
-		var items = [];
+		var items = opt.items||[];
 		var results,form;
 		var inline = (typeof opt.inline==="boolean" ? opt.inline : false);
 
@@ -48,20 +48,20 @@
 
 			// Add results to DOM
 			if(!results){
-				el.parentElement.style.position = "relative";
+				//el.parentElement.style.position = "relative";
 				results = document.createElement('div');
 				results.classList.add('typeahead-results');
 				results.style.top = (el.offsetTop + el.offsetHeight)+'px';
 				results.style.left = el.offsetLeft+'px';
 				results.style.maxWidth = (el.parentElement.offsetWidth - el.offsetLeft - parseInt(window.getComputedStyle(el.parentElement, null).getPropertyValue('padding-right')))+'px';
 				results.style.position = "absolute";
-				form.style.position = "relative";
+				//form.style.position = "relative";
 				el.insertAdjacentElement('afterend',results);
 			}
 
 			html = "";
 			if(tmp.length > 0){
-				n = Math.min(tmp.length,(typeof opt.max==="number" ? opt.max : 10));
+				n = (typeof opt.max==="number") ? Math.min(tmp.length,opt.max) : tmp.length;
 				html = "<ol>";
 				for(i = 0; i < n; i++){
 					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" '+(i==0 ? ' class="selected"':'')+'><a tabindex="0" href="#" class="name">'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</a></li>";
@@ -69,9 +69,7 @@
 				html += "</ol>";
 			}
 			results.innerHTML = html;
-			if(inline){
-				el.style.marginBottom = results.offsetHeight+'px';
-			}
+			if(inline) el.style.marginBottom = results.offsetHeight+'px';
 
 			// Add click events
 			var li = getLi();
