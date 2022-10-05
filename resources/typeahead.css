@@ -1,4 +1,12 @@
 .typeahead-results { width: 100%; }
 .typeahead-results ol { list-style: none; margin: 0px; padding: 0px;  }
-.typeahead-results li > a { padding: 0.25em 0.5em; background: #efefef; text-decoration: none; display: block; color: inherit; }
-.typeahead-results li.selected > a { background-color: #444; color: white; }
+.typeahead-results li > button { background: #efefef; text-decoration: none; display: block; color: inherit; border: 0; width: 100%; height: auto; font-size: 1em; cursor: pointer; }
+.typeahead-results li.selected > button { background-color: #444; color: white; }
+.typeahead-results li .item span {
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: left;
+	padding: 0.25em 0.5em;
+}

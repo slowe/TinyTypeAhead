@@ -1,5 +1,6 @@
+
 /*!
-	Typeahead search v0.1.7
+	Typeahead search v0.1.8
 */
 (function(root){
 
@@ -23,7 +24,7 @@
 		var _obj = this;
 		var evs = {};
 		var items = opt.items||[];
-		var results,form;
+		var results,frm;
 		var inline = (typeof opt.inline==="boolean" ? opt.inline : false);
 
 		function search(s,e,t){
@@ -48,14 +49,14 @@
 
 			// Add results to DOM
 			if(!results){
-				//el.parentElement.style.position = "relative";
+				el.parentElement.style.position = "relative";
 				results = document.createElement('div');
 				results.classList.add('typeahead-results');
 				results.style.top = (el.offsetTop + el.offsetHeight)+'px';
 				results.style.left = el.offsetLeft+'px';
 				results.style.maxWidth = (el.parentElement.offsetWidth - el.offsetLeft - parseInt(window.getComputedStyle(el.parentElement, null).getPropertyValue('padding-right')))+'px';
 				results.style.position = "absolute";
-				//form.style.position = "relative";
+				if(frm) frm.style.position = "relative";
 				el.insertAdjacentElement('afterend',results);
 			}
 
@@ -64,7 +65,7 @@
 				n = (typeof opt.max==="number") ? Math.min(tmp.length,opt.max) : tmp.length;
 				html = "<ol>";
 				for(i = 0; i < n; i++){
-					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" '+(i==0 ? ' class="selected"':'')+'><a tabindex="0" href="#" class="name">'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</a></li>";
+					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" '+(i==0 ? ' class="selected"':'')+'><button tabindex="0" href="#" class="name item"><span>'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</span></button></li>";
 				}
 				html += "</ol>";
 			}
@@ -87,7 +88,7 @@
 				for(i = 0; i < evs[t].length; i++){
 					ev = evs[t][i];
 					e.data = ev.data||{};
-					if(typeof ev.fn==="function") ev.fn.call(this,e);
+					if(typeof ev.fn==="function") ev.fn.call(ev.data['this']||this,e);
 				}
 			}
 
@@ -176,8 +177,8 @@
 			}
 		};
 		if(el.form){
-			form = el.form;
-			form.addEventListener('submit',function(e){
+			frm = el.form;
+			frm.addEventListener('submit',function(e){
 				e.preventDefault();
 				e.stopPropagation();
 				submit();
@@ -191,12 +192,12 @@
 			items = items.concat(d);
 		};
 		this.clearItems = function(){ items = []; }
-		this.on('change',{'test':'blah'},function(e){  });
+		this.on('change',{},function(e){ });
 
 		return this;
 	}
 
-	root.TypeAhead = new Builder();
+	if(typeof root.TypeAhead==="undefined") root.TypeAhead = new Builder();
 
 	// Sort the data
 	function sortBy(arr,i){
