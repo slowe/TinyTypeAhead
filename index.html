@@ -92,7 +92,7 @@
 
 		<form id="form">
 			<label for="typeahead">Search for a UK airport:</label><br />
-			<input type="text" id="typeahead" value="" placeholder="e.g. Leeds and Bradford" /><input type="submit" value="Search" />
+			<input type="text" id="typeahead0" value="" placeholder="e.g. Leeds and Bradford" />
 			<div class="results">
 				The result is: <span id="results"></span>
 			</div>
@@ -152,12 +152,9 @@
 				if(str1==str2) r += (v3||4);
 				return r;
 			}
-
 			// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
-			var chart = TypeAhead.init('#typeahead',{
+			var typeahead0 = TypeAhead.init('#typeahead0',{
 				'items': [],
-				'max': 5,	// Set a maximum number to list
-				'inline': true,
 				'render': function(d){
 					// Construct the label shown in the drop down list
 					return d['name']+(d['IATA'] ? ' ('+d['IATA']+')':'');
@@ -181,16 +178,17 @@
 			
 			var loading = false;
 			// Attach a callback to the 'change' event. This gets called each time the user enters/deletes a character.
-			chart.on('change',{'me':chart},function(e){
+			typeahead0.on('change',{'me':typeahead0},function(e){
 				if(!loading){
 					loading = true;
-					// We'll use stuQuery's ajax to load the CSV, process it and add it to the item list
-					S().ajax('airports-uk.json',{
-						'dataType':'json',
-						'this': e.data.me,	// chart
-						'success': function(data){
-							this.addItems(data);
-						}
+					// We'll load the CSV, process it and add it to the item list
+					fetch('airports-uk.json',{}).then(response => {
+						if(!response.ok) throw new Error('Network response was not OK');
+						return response.json();
+					}).then(json => {
+						e.data.me.addItems(json);
+					}).catch(e => {
+						console.error('There has been a problem loading the data.');
 					});
 				}
 			});
@@ -200,29 +198,6 @@
 		
 		<h2>CSS</h2>
 		<p>The type-ahead results are added in a <code>&lt;div&gt;</code> element with the class <code>typeahead-results</code>. The div contains an ordered list <code>&lt;ol&gt;</code> containing list items <code>&lt;li&gt;</code> for each result. The selected list item has the class <code>selected</code>.</p>
-		<div class="example-code" data-title="false">
-			<style>
-			.typeahead-results {
-				width: 100%;
-			}
-			.typeahead-results ol {
-				list-style: none;
-				margin: 0px;
-				padding: 0px;
-			}
-			.typeahead-results li > a {
-				padding: 0.25em 0.5em;
-				background: #efefef;
-				text-decoration: none;
-				display: block;
-				color: inherit;
-			}
-			.typeahead-results li.selected > a {
-				background-color: #444;
-				color: white;
-			}
-			</style>
-		</div>
 		
 		<h2>Examples</h2>
 
@@ -243,7 +218,7 @@
 			ready(function(){
 
 				// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
-				chart = TypeAhead.init('#typeahead1',{
+				typeahead1 = TypeAhead.init('#typeahead1',{
 					'items': [
 						'Leeds and Bradford Airport',
 						'Newcastle International Airport',
@@ -263,7 +238,7 @@
 
 			<form id="form1">
 				<label for="typeahead">Search for an airport:</label>
-				<input type="text" id="typeahead1" value="" placeholder="e.g. Leeds and Bradford" /><input type="submit" value="Search" />
+				<input type="text" id="typeahead1" value="" placeholder="e.g. Leeds and Bradford" />
 				<div class="results">
 					The result is: <span id="results1"></span>
 				</div>
@@ -278,8 +253,8 @@
 			<script>
 			ready(function(){
 
-				// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
-				var chart2 = TypeAhead.init('#typeahead2',{
+				// Build the TypeAhead object around &lt;input type="text" id="typeahead"&gt;
+				var typeahead2 = TypeAhead.init('#typeahead2',{
 					'items': [
 						{'name':'Leeds and Bradford Airport','IATA':'LBA'},
 						{'name':'Newcastle International Airport','IATA':'NCL'},
@@ -288,7 +263,6 @@
 						{'name':'Doncaster Sheffield Airport','IATA':'DSA'},
 						{'name':'Humberside Airport','IATA':'HUY'}
 					],
-					'inline': true,	// The results are shown inline so as not to hide any existing DOM
 					'rank': function(d,str){
 						// Calculate a weighting
 						var r = 0;
@@ -318,7 +292,7 @@
 			</script>
 			<form id="form2">
 				<label for="typeahead2">Search for an airport:</label>
-				<input type="text" id="typeahead2" value="" placeholder="e.g. Leeds" /><input type="submit" value="Search" />
+				<input type="text" id="typeahead2" value="" placeholder="e.g. Leeds" />
 				<div class="results">
 					The result is: <span id="results2"></span>
 				</div>
@@ -344,8 +318,8 @@
 					return r;
 				}
 
-				// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
-				var chart3 = TypeAhead.init('#typeahead3',{
+				// Build the TypeAhead object around &lt;input type="text" id="typeahead"&gt;
+				var typeahead3 = TypeAhead.init('#typeahead3',{
 					'items': [],
 					'max': 8,	// Set a maximum number to list
 					'render': function(d){
@@ -370,16 +344,18 @@
 				
 				var loading = false;
 				// Attach a callback to the 'change' event. This gets called each time the user enters/deletes a character.
-				chart3.on('change',{'me':chart3},function(e){
+				typeahead3.on('change',{'me':typeahead3},function(e){
 					if(!loading){
 						loading = true;
-						// We'll use stuQuery's ajax to load the CSV, process it and add it to the item list
-						S().ajax('airports-uk.json',{
-							'dataType':'json',
-							'this': e.data.me,	// chart3
-							'success': function(data){
-								this.addItems(data);
-							}
+						// We'll load the CSV, process it and add it to the item list
+						fetch('airports-uk.json',{}).then(response => {
+							if(!response.ok) throw new Error('Network response was not OK');
+							return response.json();
+						}).then(json => {
+							e.data.me.addItems(json);
+							e.data.me.trigger('change',e);
+						}).catch(e => {
+							console.error('There has been a problem loading route data.');
 						});
 					}
 				});
@@ -388,7 +364,7 @@
 			</script>
 			<form id="form3">
 				<label for="typeahead3">Search for a UK airport:</label><br />
-				<input type="text" id="typeahead3" value="" placeholder="e.g. Leeds" /><input type="submit" value="Search" />
+				<input type="text" id="typeahead3" value="" placeholder="e.g. Leeds" />
 				<div class="results">
 					The result is: <span id="results3"></span>
 				</div>
@@ -405,8 +381,8 @@
 			<script>
 			ready(function(){
 
-				// Build the barchart object attached to &lt;input type="text" id="typeahead"&gt;
-				var chart4 = TypeAhead.init('#typeahead4',{
+				// Build the TypeAhead object around &lt;input type="text" id="typeahead"&gt;
+				var typeahead4 = TypeAhead.init('#typeahead4',{
 					'items': [],
 					'max': 8,	// Set a maximum number to list
 					'render': function(d){
@@ -446,36 +422,39 @@
 				
 				var loading = false;
 				// Attach a callback to the 'change' event. This gets called each time the user enters/deletes a character.
-				chart4.on('change',{'me':chart4},function(e){
+				typeahead4.on('change',{'me':typeahead4},function(e){
 					if(!loading){
 						loading = true;
-						// We'll use stuQuery's ajax to load the CSV, process it and add it to the item list
-						S().ajax('airports-uk.csv',{
-							'dataType':'text',
-							'this': e.data.me,	// chart4
-							'success': function(d){
-								d = d.split(/[\n]/);
-								data = new Array(d.length-1);
-								for(var l = 0; l < d.length; l++){
-									cols = d[l].split(/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/);
-									if(l == 0) header = cols;
-									else{
-										datum = {};
-										for(var c = 0; c < cols.length; c++) datum[header[c]] = cols[c].replace(/(^\"|\"$)/g,"");
-										data[l-1] = datum;
-									}
+						// We'll load the CSV, process it and add it to the item list
+						fetch('airports-uk.csv',{}).then(response => {
+							if(!response.ok) throw new Error('Network response was not OK');
+							return response.text();
+						}).then(d => {
+							d = d.split(/[\n]/);
+							var l,cols,header,datum,c;
+							var data = new Array(d.length-1);
+							for(l = 0; l < d.length; l++){
+								cols = d[l].split(/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/);
+								if(l == 0) header = cols;
+								else{
+									datum = {};
+									for(c = 0; c < cols.length; c++) datum[header[c]] = cols[c].replace(/(^\"|\"$)/g,"");
+									data[l-1] = datum;
 								}
-								this.addItems(data);
 							}
+							e.data.me.addItems(data);
+							e.data.me.trigger('change',e);
+						}).catch(e => {
+							console.error('There has been a problem loading route data.');
 						});
 					}
 				});
 
 			});
 			</script>
-			<form id="form3">
+			<form id="form4">
 				<label for="typeahead4">Search for a UK airport:</label><br />
-				<input type="text" id="typeahead4" value="" placeholder="e.g. Leeds" /><input type="submit" value="Search" />
+				<input type="text" id="typeahead4" value="" placeholder="e.g. Leeds" />
 				<div class="results">
 					The result is: <span id="results4"></span>
 				</div>

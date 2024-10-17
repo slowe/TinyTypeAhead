@@ -1,14 +1,15 @@
 /*!
-	Typeahead search v0.1.8
+	Typeahead search v0.2.0
 */
 (function(root){
 
 	function Builder(){
-		this.version = "0.1.8";
+		this.version = "0.2.0";
 		this.init = function(el,opt){ return new TA(el,opt); };
 		return this;
 	}
-	/**
+
+	/*
 	 * @desc Create a new TypeAhead object
 	 * @param {DOM|string} el - the DOM element
 	 * @param {object} opt - configuration options
@@ -23,9 +24,19 @@
 		var _obj = this;
 		var evs = {};
 		var items = opt.items||[];
-		var results,frm;
-		var inline = (typeof opt.inline==="boolean" ? opt.inline : false);
+		var results,frm,wrapper;
 
+		window.addEventListener('resize',function(){
+			if(wrapper){
+				wrapper.style.width = '';
+				wrapper.style.width = el.offsetWidth;
+			}
+		});
+		function click(ev){
+			ev.preventDefault();
+			ev.stopPropagation();
+			selectLI(this.getAttribute('data-id'));
+		}
 		function search(s,e,t){
 
 			var n,i,tmp,str,html,datum,ev;
@@ -51,10 +62,7 @@
 				el.parentElement.style.position = "relative";
 				results = document.createElement('div');
 				results.classList.add('typeahead-results');
-				results.style.top = (el.offsetTop + el.offsetHeight)+'px';
-				results.style.left = el.offsetLeft+'px';
-				results.style.maxWidth = (el.parentElement.offsetWidth - el.offsetLeft - parseInt(window.getComputedStyle(el.parentElement, null).getPropertyValue('padding-right')))+'px';
-				results.style.position = "absolute";
+				wrapper.style.width = el.offsetWidth;
 				frm.style.position = "relative";
 				el.insertAdjacentElement('afterend',results);
 			}
@@ -62,25 +70,20 @@
 			html = "";
 			if(tmp.length > 0){
 				n = (typeof opt.max==="number") ? Math.min(tmp.length,opt.max) : tmp.length;
-				html = "<ol>";
+				html = '<ol id="'+el.id+'_listbox" aria-labelledby="'+el.id+'" role="listbox">';
 				for(i = 0; i < n; i++){
-					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" '+(i==0 ? ' class="selected"':'')+'><a tabindex="0" href="#" class="name item">'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</a></li>";
+					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" aria-selected="'+(i==0 ? 'true':'false')+'" tabindex="-1">'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</li>";
 				}
 				html += "</ol>";
 			}
+			if(el) el.setAttribute('aria-expanded',(tmp.length > 0 ? 'true':'false'));
 			results.innerHTML = html;
-			if(inline) el.style.marginBottom = results.offsetHeight+'px';
+			results.style.display = (n > 0) ? '' : 'hidden';
 
 			// Add click events
 			var li = getLi();
-			for(i = 0 ; i < li.length ; i++){
-				li[i].addEventListener('click',function(ev){
-					ev.preventDefault();
-					ev.stopPropagation();
-					selectLI(this.getAttribute('data-id'));
-				});
-			}
-			
+			for(i = 0 ; i < li.length ; i++) li[i].addEventListener('click',click);
+
 			if(evs[t]){
 				e._typeahead = _obj;
 				// Process each of the events attached to this event
@@ -98,44 +101,48 @@
 		
 		function selectLI(i){
 			if(i){
+				if(items[i].__label) el.value = items[i].__label;
 				_obj.input = el;
 				if(typeof opt.process==="function") opt.process.call(_obj,items[i]);
 				else console.log(items[i]);
 			}
 			if(results) results.innerHTML = "";
-			if(inline) el.style.marginBottom = "0px";
 			return;
 		}
 
 		function submit(){
 			var li = getLi();
 			for(var i = 0; i < li.length; i++){
-				if(li[i].classList.contains('selected')) return selectLI(li[i].getAttribute('data-id'));
+				if(li[i].getAttribute('aria-selected')=="true") return selectLI(li[i].getAttribute('data-id'));
 			}
 			return;
 		}
-
 		function highlight(keyCode){
 			var li = getLi();
 			var s = -1;
-			var sel;
+			var sel,bb_el,bb_ol;
 			for(var i = 0; i < li.length; i++){
-				if(li[i].classList.contains('selected')) s = i;
+				if(li[i].getAttribute('aria-selected')=="true") s = i;
 			}
 			sel = s;
 			if(keyCode==40) s++;
 			else s--;
 			if(s < 0) s = li.length-1;
 			if(s >= li.length) s = 0;
-			if(sel >= 0) li[sel].classList.remove('selected');
-			li[s].classList.add('selected');
+			if(sel >= 0) li[sel].setAttribute('aria-selected','false');
+			if(li[s]){
+				li[s].setAttribute('aria-selected','true');
+				bb_el = li[s].getBoundingClientRect();
+				bb_ol = li[s].parentNode.parentNode.getBoundingClientRect();
+				li[s].parentNode.parentNode.scrollTop = (li[s].parentNode.parentNode.scrollTop + (bb_el.top - bb_ol.top) - (bb_ol.height/2) + (bb_el.height/2)  );
+			}
 		}
 		this.update = function(){
 			var ev = document.createEvent('HTMLEvents');
 			ev.initEvent('keyup', false, true);
 			el.dispatchEvent(ev);
 			return this;
-		}
+		};
 		this.on = function(event,data,fn){
 			if(!el){
 				console.warn('Unable to attach event '+event);
@@ -162,9 +169,16 @@
 					});
 				}
 				evs[event].push({'fn':fn,'data':data});
-			}else if(event=="blur"){
-				console.log('blur');
 			}else console.warn('No event of type '+event);
+			return this;
+		};
+		this.trigger = function(eventType,e){
+			if(typeof eventType === 'string' && typeof el[eventType] === 'function'){
+				el[eventType]();
+			}else{
+				if(!e) e = typeof eventType === 'string' ? new Event(eventType, {bubbles: true}) : eventType;
+				el.dispatchEvent(e);
+			}
 			return this;
 		};
 		this.off = function(e,fn){
@@ -184,19 +198,33 @@
 			},false);
 		}
 		if(el){
+			wrapper = wrap(el,'div');
+			wrapper.classList.add('typeahead-wrapper');
 			el.setAttribute('autocomplete','off');
+			el.setAttribute('role','combobox');
+			el.setAttribute('aria-expanded','false');
 		}
 		this.addItems = function(d){
 			if(!items) items = [];
+			for(var i = 0; i < d.length; i++){
+				d[i].__label = (typeof opt.render==="function" ? opt.render(d[i]) : d[i]);
+			}
 			items = items.concat(d);
 		};
-		this.clearItems = function(){ items = []; }
+		this.clearItems = function(){ items = []; };
 		this.on('change',{},function(e){ });
 
 		return this;
 	}
 
 	if(typeof root.TypeAhead==="undefined") root.TypeAhead = new Builder();
+
+	function wrap(el,t) {
+		var wrappingElement = document.createElement(t);
+		el.replaceWith(wrappingElement);
+		wrappingElement.appendChild(el);
+		return wrappingElement;
+	}
 
 	// Sort the data
 	function sortBy(arr,i){
