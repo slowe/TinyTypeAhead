@@ -71,11 +71,16 @@
 				n = (typeof opt.max==="number") ? Math.min(tmp.length,opt.max) : tmp.length;
 				html = '<ol id="'+el.id+'_listbox" aria-labelledby="'+el.id+'" role="listbox">';
 				for(i = 0; i < n; i++){
-					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" aria-selected="'+(i==0 ? 'true':'false')+'" tabindex="-1"'+(typeof opt.setClass==="function" ? ' class="'+opt.setClass(items[tmp[i].key])+'"' : '')+'>'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</li>";
+					if(tmp[i].rank > 0) html += '<li role="option" data-id="'+tmp[i].key+'" aria-selected="false" tabindex="-1"'+(typeof opt.setClass==="function" ? ' class="'+opt.setClass(items[tmp[i].key])+'"' : '')+'>'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</li>";
 				}
-				html += "</ol>";
+				html += '</ol>';
 			}
-			if(el) el.setAttribute('aria-expanded',(tmp.length > 0 ? 'true':'false'));
+			html += '<span id="'+el.id+'_assistiveHint" style="display:none">When autocomplete results are available use up and down arrows to review, and enter to select.</span>';
+			if(el){
+				el.setAttribute('aria-expanded',(tmp.length > 0 ? 'true':'false'));
+				el.setAttribute('aria-controls',el.id+'_listbox');
+				el.setAttribute('aria-describedby',el.id+'_assistiveHint');
+			}
 			results.innerHTML = html;
 			results.style.display = (n > 0) ? '' : 'hidden';
 
@@ -198,8 +203,9 @@
 		if(el){
 			wrapper = wrap(el,'div');
 			wrapper.classList.add('typeahead-wrapper');
-			el.setAttribute('autocomplete','off');
 			el.setAttribute('role','combobox');
+			el.setAttribute('autocomplete','off');
+			el.setAttribute('aria-autocomplete','list');
 			el.setAttribute('aria-expanded','false');
 		}
 		this.addItems = function(d){
