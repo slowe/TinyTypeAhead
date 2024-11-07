@@ -1,10 +1,10 @@
 /*!
-	Typeahead search v0.2.0
+	Typeahead search v0.2.1
 */
 (function(root){
 
 	function Builder(){
-		this.version = "0.2.0";
+		this.version = "0.2.1";
 		this.init = function(el,opt){ return new TA(el,opt); };
 		return this;
 	}
@@ -38,7 +38,6 @@
 			selectLI(this.getAttribute('data-id'));
 		}
 		function search(s,e,t){
-
 			var n,i,tmp,str,html,datum,ev;
 			str = s.toUpperCase();
 
@@ -72,7 +71,7 @@
 				n = (typeof opt.max==="number") ? Math.min(tmp.length,opt.max) : tmp.length;
 				html = '<ol id="'+el.id+'_listbox" aria-labelledby="'+el.id+'" role="listbox">';
 				for(i = 0; i < n; i++){
-					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" aria-selected="'+(i==0 ? 'true':'false')+'" tabindex="-1">'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</li>";
+					if(tmp[i].rank > 0) html += '<li data-id="'+tmp[i].key+'" aria-selected="'+(i==0 ? 'true':'false')+'" tabindex="-1"'+(typeof opt.setClass==="function" ? ' class="'+opt.setClass(items[tmp[i].key])+'"' : '')+'>'+(typeof opt.render==="function" ? opt.render(items[tmp[i].key]) : items[tmp[i].key])+"</li>";
 				}
 				html += "</ol>";
 			}
@@ -159,7 +158,6 @@
 						}else if(e.keyCode==13){
 							submit();
 						}else{
-							// Match here
 							search(this.value,e,event);
 							if(typeof opt.endsearch==="function") opt.endsearch(this.value);
 						}
